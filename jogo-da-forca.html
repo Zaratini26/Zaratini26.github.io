@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Jogo da Forca · Zaratini26</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #090d13;
+    --surface: #0d1117;
+    --surface2: #161b22;
+    --border: #21262d;
+    --border2: #30363d;
+    --blue: #388bfd;
+    --green: #3fb950;
+    --red: #f85149;
+    --yellow: #d29922;
+    --text: #e6edf3;
+    --text2: #8b949e;
+    --text3: #484f58;
+    --mono: 'JetBrains Mono', monospace;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--mono);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 2rem 1rem;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(56,139,253,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(56,139,253,0.03) 1px, transparent 1px);
+    background-size: 48px 48px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .wrap { position: relative; z-index: 1; width: 100%; max-width: 600px; }
+
+  header {
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+
+  header h1 {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--text);
+    letter-spacing: -0.01em;
+  }
+
+  header h1 span { color: var(--blue); }
+
+  header p {
+    font-size: 12px;
+    color: var(--text3);
+    margin-top: 4px;
+  }
+
+  /* SCREENS */
+  .screen { display: none; }
+  .screen.active { display: block; }
+
+  /* MENU */
+  .menu-card {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 2rem;
+    margin-bottom: 1rem;
+  }
+
+  .menu-title {
+    font-size: 13px;
+    color: var(--text3);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 1.5rem;
+    text-align: center;
+  }
+
+  .name-input-wrap {
+    margin-bottom: 1.5rem;
+  }
+
+  .name-input-wrap label {
+    display: block;
+    font-size: 12px;
+    color: var(--text2);
+    margin-bottom: 6px;
+  }
+
+  .name-input-wrap input {
+    width: 100%;
+    background: var(--surface);
+    border: 1px solid var(--border2);
+    border-radius: 6px;
+    color: var(--text);
+    font-family: var(--mono);
+    font-size: 14px;
+    padding: 10px 14px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .name-input-wrap input:focus { border-color: var(--blue); }
+
+  .menu-btns { display: flex; flex-direction: column; gap: 10px; }
+
+  .btn {
+    font-family: var(--mono);
+    font-size: 13px;
+    font-weight: 500;
+    padding: 10px 20px;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    transition: opacity 0.2s, transform 0.1s;
+    width: 100%;
+    letter-spacing: 0.02em;
+  }
+
+  .btn:active { transform: scale(0.98); }
+  .btn-blue { background: var(--blue); color: #fff; }
+  .btn-blue:hover { opacity: 0.85; }
+  .btn-ghost { background: transparent; color: var(--text2); border: 1px solid var(--border2); }
+  .btn-ghost:hover { border-color: var(--blue); color: var(--text); }
+  .btn-danger { background: transparent; color: var(--red); border: 1px solid rgba(248,81,73,0.3); }
+  .btn-danger:hover { background: rgba(248,81,73,0.08); }
+
+  /* GAME */
+  .game-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 16px;
+    margin-bottom: 1rem;
+    font-size: 12px;
+    color: var(--text2);
+  }
+
+  .player-name { color: var(--blue); font-weight: 500; }
+
+  .tema-badge {
+    background: rgba(56,139,253,0.1);
+    border: 1px solid rgba(56,139,253,0.2);
+    color: var(--blue);
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+  }
+
+  /* FORCA SVG */
+  .forca-wrap {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1.5rem;
+    text-align: center;
+    margin-bottom: 1rem;
+  }
+
+  .forca-svg {
+    width: 160px;
+    height: 170px;
+    margin: 0 auto;
+  }
+
+  /* WORD */
+  .word-wrap {
+    text-align: center;
+    margin-bottom: 1rem;
+    padding: 1rem;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+  }
+
+  .word-hint {
+    font-size: 11px;
+    color: var(--text3);
+    margin-bottom: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  .word-letters {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .letter-box {
+    width: 32px;
+    height: 36px;
+    border-bottom: 2px solid var(--border2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text);
+    transition: color 0.2s, border-color 0.2s;
+  }
+
+  .letter-box.revealed { border-color: var(--blue); color: var(--blue); }
+
+  /* KEYBOARD */
+  .keyboard {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    justify-content: center;
+    margin-bottom: 1rem;
+  }
+
+  .key {
+    width: 36px;
+    height: 36px;
+    background: var(--surface2);
+    border: 1px solid var(--border2);
+    border-radius: 5px;
+    color: var(--text);
+    font-family: var(--mono);
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.15s, border-color 0.15s, color 0.15s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .key:hover:not(:disabled) { border-color: var(--blue); color: var(--blue); }
+  .key:disabled { opacity: 0.25; cursor: not-allowed; }
+  .key.hit { background: rgba(63,185,80,0.12); border-color: var(--green); color: var(--green); }
+  .key.miss { background: rgba(248,81,73,0.08); border-color: rgba(248,81,73,0.3); color: var(--red); }
+
+  /* ERROS */
+  .erros-bar {
+    display: flex;
+    gap: 6px;
+    justify-content: center;
+    margin-bottom: 1rem;
+  }
+
+  .erro-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--border2);
+    transition: background 0.2s;
+  }
+
+  .erro-dot.active { background: var(--red); }
+
+  /* RESULTADO */
+  .result-card {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 2rem;
+    text-align: center;
+    margin-bottom: 1rem;
+  }
+
+  .result-icon { font-size: 40px; margin-bottom: 0.5rem; }
+  .result-title { font-size: 18px; font-weight: 700; margin-bottom: 0.5rem; }
+  .result-title.win { color: var(--green); }
+  .result-title.lose { color: var(--red); }
+  .result-word { font-size: 13px; color: var(--text2); margin-bottom: 1rem; }
+  .result-word span { color: var(--blue); font-weight: 500; }
+  .score-num { font-size: 28px; font-weight: 700; color: var(--yellow); }
+  .score-lbl { font-size: 11px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.08em; margin-top: 2px; }
+
+  /* SCORE */
+  .score-list { list-style: none; }
+  .score-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 13px;
+  }
+  .score-item:last-child { border-bottom: none; }
+  .score-item .rank { color: var(--text3); min-width: 24px; }
+  .score-item .s-name { flex: 1; padding: 0 12px; color: var(--text); }
+  .score-item .s-pts { color: var(--yellow); font-weight: 700; }
+  .score-empty { text-align: center; color: var(--text3); font-size: 13px; padding: 1.5rem; }
+
+  .section-head {
+    font-size: 12px;
+    color: var(--text3);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .section-head::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+  footer {
+    text-align: center;
+    margin-top: 2rem;
+    font-size: 11px;
+    color: var(--text3);
+  }
+  footer a { color: var(--text3); text-decoration: none; }
+  footer a:hover { color: var(--blue); }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header>
+    <h1>Jogo da <span>Forca</span></h1>
+    <p>by Zaratini26 · Temas: Animais e Frutas</p>
+  </header>
+
+  <!-- MENU -->
+  <div id="screen-menu" class="screen active">
+    <div class="menu-card">
+      <div class="menu-title">Menu Principal</div>
+      <div class="name-input-wrap">
+        <label>Quem está jogando?</label>
+        <input type="text" id="player-name" placeholder="Digite seu nome..." maxlength="20" />
+      </div>
+      <div class="menu-btns">
+        <button class="btn btn-blue" onclick="iniciarJogo()">▶ Jogar</button>
+        <button class="btn btn-ghost" onclick="mostrarScore()">🏆 Placar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- JOGO -->
+  <div id="screen-game" class="screen">
+    <div class="game-header">
+      <span>Jogando: <span class="player-name" id="display-player">—</span></span>
+      <span class="tema-badge" id="display-tema">—</span>
+    </div>
+
+    <div class="forca-wrap">
+      <svg class="forca-svg" viewBox="0 0 160 170" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <!-- estrutura fixa -->
+        <line x1="10" y1="165" x2="150" y2="165" stroke="#30363d" stroke-width="3" stroke-linecap="round"/>
+        <line x1="40" y1="165" x2="40" y2="10" stroke="#30363d" stroke-width="3" stroke-linecap="round"/>
+        <line x1="40" y1="10" x2="110" y2="10" stroke="#30363d" stroke-width="3" stroke-linecap="round"/>
+        <line x1="110" y1="10" x2="110" y2="30" stroke="#30363d" stroke-width="3" stroke-linecap="round"/>
+        <!-- boneco -->
+        <circle id="head" cx="110" cy="45" r="15" stroke="#f85149" stroke-width="2.5" style="display:none"/>
+        <line id="body" x1="110" y1="60" x2="110" y2="110" stroke="#f85149" stroke-width="2.5" stroke-linecap="round" style="display:none"/>
+        <line id="arm-left" x1="110" y1="75" x2="85" y2="95" stroke="#f85149" stroke-width="2.5" stroke-linecap="round" style="display:none"/>
+        <line id="arm-right" x1="110" y1="75" x2="135" y2="95" stroke="#f85149" stroke-width="2.5" stroke-linecap="round" style="display:none"/>
+        <line id="leg-left" x1="110" y1="110" x2="85" y2="140" stroke="#f85149" stroke-width="2.5" stroke-linecap="round" style="display:none"/>
+        <line id="leg-right" x1="110" y1="110" x2="135" y2="140" stroke="#f85149" stroke-width="2.5" stroke-linecap="round" style="display:none"/>
+      </svg>
+
+      <div class="erros-bar" id="erros-bar"></div>
+    </div>
+
+    <div class="word-wrap">
+      <div class="word-hint" id="word-hint">? letras</div>
+      <div class="word-letters" id="word-letters"></div>
+    </div>
+
+    <div class="keyboard" id="keyboard"></div>
+
+    <button class="btn btn-danger" style="margin-top:0.5rem" onclick="voltarMenu()">← Desistir</button>
+  </div>
+
+  <!-- RESULTADO -->
+  <div id="screen-result" class="screen">
+    <div class="result-card">
+      <div class="result-icon" id="result-icon"></div>
+      <div class="result-title" id="result-title"></div>
+      <div class="result-word" id="result-word"></div>
+      <div class="score-num" id="result-score"></div>
+      <div class="score-lbl">pontos</div>
+    </div>
+    <div style="display:flex;gap:10px;">
+      <button class="btn btn-blue" style="flex:1" onclick="jogarNovamente()">▶ Jogar novamente</button>
+      <button class="btn btn-ghost" style="flex:1" onclick="voltarMenu()">Menu</button>
+    </div>
+  </div>
+
+  <!-- SCORE -->
+  <div id="screen-score" class="screen">
+    <div class="section-head">Placar</div>
+    <div class="menu-card" style="padding:1rem 1.5rem">
+      <ul class="score-list" id="score-list"></ul>
+    </div>
+    <button class="btn btn-ghost" onclick="voltarMenu()">← Voltar</button>
+  </div>
+
+  <footer>
+    <a href="https://github.com/Zaratini26/Jogo-da-Forca" target="_blank">Ver código no GitHub ↗</a>
+  </footer>
+</div>
+
+<script>
+const PALAVRAS = [
+  "CACHORRO","ELEFANTE","GIRAFA","LEAO","TIGRE","BALEIA","GOLFINHO",
+  "TUBARAO","TARTARUGA","CORUJA","ABACAXI","MELANCIA","MORANGO",
+  "BANANA","LARANJA"
+];
+
+const TEMAS = {
+  "CACHORRO":"Animal","ELEFANTE":"Animal","GIRAFA":"Animal","LEAO":"Animal",
+  "TIGRE":"Animal","BALEIA":"Animal","GOLFINHO":"Animal","TUBARAO":"Animal",
+  "TARTARUGA":"Animal","CORUJA":"Animal","ABACAXI":"Fruta","MELANCIA":"Fruta",
+  "MORANGO":"Fruta","BANANA":"Fruta","LARANJA":"Fruta"
+};
+
+const PARTES = ['head','body','arm-left','arm-right','leg-left','leg-right'];
+
+let state = { player:'', palavra:'', acertos:[], erros:0, jogando:false };
+let scores = JSON.parse(localStorage.getItem('forca_scores') || '[]');
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('screen-' + id).classList.add('active');
+}
+
+function iniciarJogo() {
+  const nome = document.getElementById('player-name').value.trim();
+  if (!nome || !/^[a-zA-ZÀ-ÿ ]+$/.test(nome)) {
+    document.getElementById('player-name').focus();
+    document.getElementById('player-name').style.borderColor = '#f85149';
+    setTimeout(() => document.getElementById('player-name').style.borderColor = '', 1000);
+    return;
+  }
+  state.player = nome;
+  state.palavra = PALAVRAS[Math.floor(Math.random() * PALAVRAS.length)];
+  state.acertos = [];
+  state.erros = 0;
+  state.jogando = true;
+
+  document.getElementById('display-player').textContent = nome;
+  document.getElementById('display-tema').textContent = TEMAS[state.palavra] || 'Desconhecido';
+
+  renderForca();
+  renderPalavra();
+  renderTeclado();
+  renderErros();
+  showScreen('game');
+}
+
+function renderForca() {
+  PARTES.forEach((id, i) => {
+    document.getElementById(id).style.display = i < state.erros ? 'block' : 'none';
+  });
+}
+
+function renderPalavra() {
+  const wrap = document.getElementById('word-letters');
+  wrap.innerHTML = '';
+  let adivinha = '';
+  for (const letra of state.palavra) {
+    const box = document.createElement('div');
+    box.className = 'letter-box' + (state.acertos.includes(letra) ? ' revealed' : '');
+    box.textContent = state.acertos.includes(letra) ? letra : '';
+    wrap.appendChild(box);
+    adivinha += state.acertos.includes(letra) ? letra : '_';
+  }
+  document.getElementById('word-hint').textContent = state.palavra.length + ' letras';
+  return adivinha;
+}
+
+function renderTeclado() {
+  const kb = document.getElementById('keyboard');
+  kb.innerHTML = '';
+  'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('').forEach(letra => {
+    const btn = document.createElement('button');
+    btn.className = 'key';
+    btn.textContent = letra;
+    btn.id = 'key-' + letra;
+    btn.onclick = () => tentarLetra(letra);
+    kb.appendChild(btn);
+  });
+}
+
+function renderErros() {
+  const bar = document.getElementById('erros-bar');
+  bar.innerHTML = '';
+  for (let i = 0; i < 6; i++) {
+    const dot = document.createElement('div');
+    dot.className = 'erro-dot' + (i < state.erros ? ' active' : '');
+    bar.appendChild(dot);
+  }
+}
+
+function tentarLetra(letra) {
+  if (!state.jogando) return;
+  const btn = document.getElementById('key-' + letra);
+  if (btn.disabled) return;
+  btn.disabled = true;
+
+  if (state.palavra.includes(letra)) {
+    state.acertos.push(letra);
+    btn.classList.add('hit');
+  } else {
+    state.erros++;
+    btn.classList.add('miss');
+  }
+
+  renderForca();
+  renderErros();
+  const adivinha = renderPalavra();
+
+  if (adivinha === state.palavra) {
+    setTimeout(() => mostrarResultado(true), 300);
+  } else if (state.erros >= 6) {
+    setTimeout(() => mostrarResultado(false), 300);
+  }
+}
+
+function calcScore(erros) {
+  const tabela = [1000,800,600,400,200,100,0];
+  return tabela[erros] || 0;
+}
+
+function mostrarResultado(ganhou) {
+  state.jogando = false;
+  const score = ganhou ? calcScore(state.erros) : 0;
+
+  scores.push({ nome: state.player, pontos: score, data: new Date().toLocaleDateString('pt-BR') });
+  scores.sort((a,b) => b.pontos - a.pontos);
+  if (scores.length > 20) scores = scores.slice(0, 20);
+  localStorage.setItem('forca_scores', JSON.stringify(scores));
+
+  document.getElementById('result-icon').textContent = ganhou ? '🎉' : '💀';
+  const title = document.getElementById('result-title');
+  title.textContent = ganhou ? 'Você acertou!' : 'Enforcado!';
+  title.className = 'result-title ' + (ganhou ? 'win' : 'lose');
+  document.getElementById('result-word').innerHTML = 'A palavra era: <span>' + state.palavra + '</span>';
+  document.getElementById('result-score').textContent = score;
+
+  showScreen('result');
+}
+
+function jogarNovamente() {
+  iniciarJogoComNome(state.player);
+}
+
+function iniciarJogoComNome(nome) {
+  state.player = nome;
+  state.palavra = PALAVRAS[Math.floor(Math.random() * PALAVRAS.length)];
+  state.acertos = [];
+  state.erros = 0;
+  state.jogando = true;
+
+  document.getElementById('display-player').textContent = nome;
+  document.getElementById('display-tema').textContent = TEMAS[state.palavra] || '?';
+
+  renderForca();
+  renderPalavra();
+  renderTeclado();
+  renderErros();
+  showScreen('game');
+}
+
+function mostrarScore() {
+  const list = document.getElementById('score-list');
+  if (scores.length === 0) {
+    list.innerHTML = '<div class="score-empty">Nenhum placar ainda.<br>Jogue para aparecer aqui!</div>';
+  } else {
+    list.innerHTML = scores.slice(0,10).map((s,i) =>
+      `<li class="score-item">
+        <span class="rank">${i+1}.</span>
+        <span class="s-name">${s.nome}</span>
+        <span class="s-pts">${s.pontos} pts</span>
+      </li>`
+    ).join('');
+  }
+  showScreen('score');
+}
+
+function voltarMenu() { showScreen('menu'); }
+
+// teclado físico
+document.addEventListener('keydown', e => {
+  if (document.getElementById('screen-game').classList.contains('active')) {
+    const letra = e.key.toUpperCase();
+    if (/^[A-Z]$/.test(letra)) tentarLetra(letra);
+  }
+});
+</script>
+</body>
+</html>
