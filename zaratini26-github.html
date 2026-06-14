@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Felipe Zaratini · Backend Developer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #090d13;
+    --surface: #0d1117;
+    --surface2: #161b22;
+    --surface3: #1c2128;
+    --border: #21262d;
+    --border2: #30363d;
+    --blue: #388bfd;
+    --blue-dim: #1f6feb;
+    --blue-glow: rgba(56, 139, 253, 0.12);
+    --green: #3fb950;
+    --text: #e6edf3;
+    --text2: #8b949e;
+    --text3: #484f58;
+    --mono: 'JetBrains Mono', monospace;
+    --sans: 'Inter', sans-serif;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    min-height: 100vh;
+    line-height: 1.6;
+  }
+
+  /* GRID LINES BG */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(56,139,253,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(56,139,253,0.03) 1px, transparent 1px);
+    background-size: 48px 48px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* NAV */
+  nav {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(9, 13, 19, 0.85);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    padding: 0.75rem 0;
+  }
+
+  nav .inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+  }
+
+  .nav-logo {
+    font-family: var(--mono);
+    font-size: 13px;
+    color: var(--blue);
+    text-decoration: none;
+    letter-spacing: 0.02em;
+  }
+
+  .nav-logo span { color: var(--text3); }
+
+  .nav-links {
+    display: flex;
+    gap: 1.5rem;
+    list-style: none;
+  }
+
+  .nav-links a {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--text2);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+
+  .nav-links a:hover { color: var(--text); }
+
+  /* HERO */
+  .hero {
+    padding: 5rem 0 3.5rem;
+    display: flex;
+    align-items: center;
+    gap: 2.5rem;
+  }
+
+  .avatar-wrap {
+    position: relative;
+    flex-shrink: 0;
+  }
+
+  .avatar-ring {
+    width: 110px;
+    height: 110px;
+    border-radius: 50%;
+    padding: 3px;
+    background: linear-gradient(135deg, var(--blue), #388bfd44);
+  }
+
+  .avatar-ring img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--bg);
+  }
+
+  .status-dot {
+    position: absolute;
+    bottom: 6px;
+    right: 6px;
+    width: 14px;
+    height: 14px;
+    background: var(--green);
+    border-radius: 50%;
+    border: 2px solid var(--bg);
+  }
+
+  .hero-text .tag {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--blue);
+    background: var(--blue-glow);
+    border: 1px solid rgba(56,139,253,0.2);
+    padding: 3px 10px;
+    border-radius: 20px;
+    display: inline-block;
+    margin-bottom: 0.75rem;
+    letter-spacing: 0.05em;
+  }
+
+  .hero-text h1 {
+    font-family: var(--mono);
+    font-size: 30px;
+    font-weight: 700;
+    color: var(--text);
+    letter-spacing: -0.02em;
+    margin-bottom: 0.3rem;
+    line-height: 1.2;
+  }
+
+  .hero-text h1 .accent { color: var(--blue); }
+
+  .hero-text .handle {
+    font-family: var(--mono);
+    font-size: 13px;
+    color: var(--text3);
+    margin-bottom: 0.75rem;
+  }
+
+  .hero-text .bio {
+    font-size: 15px;
+    color: var(--text2);
+    max-width: 480px;
+    line-height: 1.7;
+  }
+
+  .hero-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 1.5rem;
+    flex-wrap: wrap;
+  }
+
+  .btn-primary {
+    font-family: var(--mono);
+    font-size: 12px;
+    background: var(--blue);
+    color: #fff;
+    border: none;
+    padding: 8px 18px;
+    border-radius: 6px;
+    cursor: pointer;
+    text-decoration: none;
+    transition: opacity 0.2s;
+  }
+
+  .btn-primary:hover { opacity: 0.85; }
+
+  .btn-ghost {
+    font-family: var(--mono);
+    font-size: 12px;
+    background: transparent;
+    color: var(--text2);
+    border: 1px solid var(--border2);
+    padding: 8px 18px;
+    border-radius: 6px;
+    cursor: pointer;
+    text-decoration: none;
+    transition: border-color 0.2s, color 0.2s;
+  }
+
+  .btn-ghost:hover { border-color: var(--blue); color: var(--text); }
+
+  /* STATS */
+  .stats-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin-bottom: 3rem;
+  }
+
+  .stat {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1rem;
+    text-align: center;
+    transition: border-color 0.2s;
+  }
+
+  .stat:hover { border-color: var(--blue-dim); }
+
+  .stat .num {
+    font-family: var(--mono);
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--blue);
+    display: block;
+  }
+
+  .stat .lbl {
+    font-size: 11px;
+    color: var(--text3);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-top: 4px;
+    display: block;
+  }
+
+  /* SECTION */
+  .section { margin-bottom: 3rem; }
+
+  .section-head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 1.25rem;
+  }
+
+  .section-head .line {
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  .section-head h2 {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--text3);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-weight: 400;
+    white-space: nowrap;
+  }
+
+  /* REPO CARDS */
+  .repos {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 12px;
+  }
+
+  .repo-card {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1.1rem 1.25rem;
+    text-decoration: none;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    transition: border-color 0.2s, background 0.2s;
+  }
+
+  .repo-card:hover {
+    border-color: var(--blue);
+    background: var(--surface3);
+  }
+
+  .repo-card .repo-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .repo-icon {
+    font-size: 14px;
+    color: var(--text3);
+  }
+
+  .repo-name {
+    font-family: var(--mono);
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--blue);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .repo-desc {
+    font-size: 12px;
+    color: var(--text2);
+    line-height: 1.55;
+    flex: 1;
+  }
+
+  .repo-meta {
+    display: flex;
+    gap: 14px;
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text3);
+    margin-top: auto;
+    padding-top: 6px;
+    border-top: 1px solid var(--border);
+  }
+
+  .repo-meta .lang { display: flex; align-items: center; gap: 5px; }
+  .lang-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+
+  /* SKILLS */
+  .skills-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .skill-tag {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text2);
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    padding: 5px 12px;
+    border-radius: 4px;
+    transition: border-color 0.2s, color 0.2s;
+  }
+
+  .skill-tag:hover { border-color: var(--blue); color: var(--text); }
+  .skill-tag.main { border-color: rgba(56,139,253,0.3); color: var(--blue); }
+
+  /* INFO STRIP */
+  .info-strip {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1.1rem 1.4rem;
+    margin-bottom: 3rem;
+    font-size: 13px;
+    color: var(--text2);
+  }
+
+  .info-strip .item {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+  }
+
+  .info-strip .item svg { color: var(--text3); flex-shrink: 0; }
+
+  /* FOOTER */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 1.75rem 0;
+    text-align: center;
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text3);
+  }
+
+  footer a { color: var(--text3); text-decoration: none; }
+  footer a:hover { color: var(--blue); }
+
+  /* RESPONSIVE */
+  @media (max-width: 600px) {
+    .hero { flex-direction: column; gap: 1.5rem; padding: 3rem 0 2rem; }
+    .stats-row { grid-template-columns: repeat(2, 1fr); }
+    nav .inner { flex-direction: column; gap: 0.5rem; }
+    .hero-text h1 { font-size: 22px; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="inner">
+    <a class="nav-logo" href="#"><span>~/</span>zaratini26</a>
+    <ul class="nav-links">
+      <li><a href="https://github.com/Zaratini26?tab=repositories" target="_blank">Repositórios</a></li>
+    </ul>
+  </div>
+</nav>
+
+<main>
+  <div class="container">
+
+    <!-- HERO -->
+    <section class="hero">
+      <div class="avatar-wrap">
+        <div class="avatar-ring">
+          <img src="perfil.jfif" alt="Felipe Zaratini" />
+        </div>
+      </div>
+      <div class="hero-text">
+        <span class="tag">🕹️ Nerd desde pequeno</span>
+        <h1>Felipe <span class="accent">Zaratini</span></h1>
+        <div class="handle">@Zaratini26</div>
+        <p class="bio">Estudante de Análise e Desenvolvimento de Sistemas<br>Focado em desenvolvimento backend.</p>
+        <div class="hero-actions">
+          <a href="https://github.com/Zaratini26" target="_blank" class="btn-primary">Ver GitHub</a>
+          <a href="https://www.linkedin.com/in/felipe-zaratini-b03868405/" class="btn-ghost" target="_blank">Contato</a>
+        </div>
+      </div>
+    </section>
+
+
+
+    <!-- INFO STRIP -->
+    <div class="info-strip">
+      <div class="item">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5S10.62 6.5 12 6.5s2.5 1.12 2.5 2.5S13.38 11.5 12 11.5z"/></svg>
+        Santo André – SP, Brasil
+      </div>
+      <div class="item">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M12 14l9-5-9-5-9 5 9 5z"/><path d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"/></svg>
+        Uninter – ADS
+      </div>
+      <div class="item">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        Disponível para oportunidades
+      </div>
+    </div>
+
+    <!-- REPOSITÓRIOS -->
+    <section id="repos" class="section">
+      <div class="section-head">
+        <h2>repositórios em destaque</h2>
+        <div class="line"></div>
+      </div>
+      <div class="repos">
+
+        <a class="repo-card" href="https://github.com/Zaratini26/projeto-banco-java" target="_blank">
+          <div class="repo-header">
+            <svg class="repo-icon" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M3 3h18v18H3z" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+            <span class="repo-name">projeto-banco-java</span>
+          </div>
+          <div class="repo-desc">Aplicação console em Java focada em lógica de negócios bancários e fundamentos de POO.</div>
+          <div class="repo-meta">
+            <span class="lang"><span class="lang-dot" style="background:#b07219"></span>Java</span>
+            <span>⭐ 0</span>
+            <span>🍴 0</span>
+          </div>
+        </a>
+
+        <a class="repo-card" href="https://github.com/Zaratini26/sistema-contratos-java" target="_blank">
+          <div class="repo-header">
+            <svg class="repo-icon" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M3 3h18v18H3z" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+            <span class="repo-name">sistema-contratos-java</span>
+          </div>
+          <div class="repo-desc">Projeto de fixação de POO em Java aplicando conceitos de Composição e Enumerações.</div>
+          <div class="repo-meta">
+            <span class="lang"><span class="lang-dot" style="background:#b07219"></span>Java</span>
+            <span>⭐ 0</span>
+            <span>🍴 0</span>
+          </div>
+        </a>
+
+        <a class="repo-card" href="https://github.com/Zaratini26/Jogo-da-Forca" target="_blank">
+          <div class="repo-header">
+            <svg class="repo-icon" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M3 3h18v18H3z" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+            <span class="repo-name">Jogo-da-Forca</span>
+          </div>
+          <div class="repo-desc">Jogo da forca feito em Python. Um clássico implementado no terminal com lógica simples e eficiente.</div>
+          <div class="repo-meta">
+            <span class="lang"><span class="lang-dot" style="background:#3572A5"></span>Python</span>
+            <span>⭐ 0</span>
+            <span>🍴 0</span>
+          </div>
+        </a>
+
+      </div>
+    </section>
+
+    <!-- SKILLS -->
+    <section id="skills" class="section">
+      <div class="section-head">
+        <h2>tecnologias & ferramentas</h2>
+        <div class="line"></div>
+      </div>
+      <div class="skills-grid">
+        <span class="skill-tag main">Java</span>
+        <span class="skill-tag main">Python</span>
+        <span class="skill-tag">JavaScript</span>
+        <span class="skill-tag">HTML</span>
+        <span class="skill-tag">CSS</span>
+        <span class="skill-tag">Git</span>
+        <span class="skill-tag">GitHub</span>
+        <span class="skill-tag">SQL</span>
+      </div>
+    </section>
+
+  </div>
+</main>
+
+<footer>
+  <div class="container">
+    Felipe Zaratini &copy; 2026
+  </div>
+</footer>
+
+</body>
+</html>
