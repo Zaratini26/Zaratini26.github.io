@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Jogo da Forca · Zaratini26</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="wrap">
+  <header>
+    <h1>Jogo da <span>Forca</span></h1>
+    <p>by Zaratini26 · Temas: Animais e Frutas</p>
+  </header>
+
+  <!-- MENU -->
+  <div id="screen-menu" class="screen active">
+    <div class="menu-card">
+      <div class="menu-title">Menu Principal</div>
+      <div class="name-input-wrap">
+        <label>Quem está jogando?</label>
+        <input type="text" id="player-name" placeholder="Digite seu nome..." maxlength="20" />
+      </div>
+      <div class="menu-btns">
+        <button class="btn btn-blue" onclick="iniciarJogo()">▶ Jogar</button>
+        <button class="btn btn-ghost" onclick="mostrarScore()">🏆 Placar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- JOGO -->
+  <div id="screen-game" class="screen">
+    <div class="game-header">
+      <span>Jogando: <span class="player-name" id="display-player">—</span></span>
+      <span class="tema-badge" id="display-tema">—</span>
+    </div>
+
+    <div class="forca-wrap">
+      <svg class="forca-svg" viewBox="0 0 160 170" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <!-- estrutura fixa -->
+        <line x1="10" y1="165" x2="150" y2="165" stroke="#30363d" stroke-width="3" stroke-linecap="round"/>
+        <line x1="40" y1="165" x2="40" y2="10" stroke="#30363d" stroke-width="3" stroke-linecap="round"/>
+        <line x1="40" y1="10" x2="110" y2="10" stroke="#30363d" stroke-width="3" stroke-linecap="round"/>
+        <line x1="110" y1="10" x2="110" y2="30" stroke="#30363d" stroke-width="3" stroke-linecap="round"/>
+        <!-- boneco -->
+        <circle id="head" cx="110" cy="45" r="15" stroke="#f85149" stroke-width="2.5" style="display:none"/>
+        <line id="body" x1="110" y1="60" x2="110" y2="110" stroke="#f85149" stroke-width="2.5" stroke-linecap="round" style="display:none"/>
+        <line id="arm-left" x1="110" y1="75" x2="85" y2="95" stroke="#f85149" stroke-width="2.5" stroke-linecap="round" style="display:none"/>
+        <line id="arm-right" x1="110" y1="75" x2="135" y2="95" stroke="#f85149" stroke-width="2.5" stroke-linecap="round" style="display:none"/>
+        <line id="leg-left" x1="110" y1="110" x2="85" y2="140" stroke="#f85149" stroke-width="2.5" stroke-linecap="round" style="display:none"/>
+        <line id="leg-right" x1="110" y1="110" x2="135" y2="140" stroke="#f85149" stroke-width="2.5" stroke-linecap="round" style="display:none"/>
+      </svg>
+
+      <div class="erros-bar" id="erros-bar"></div>
+    </div>
+
+    <div class="word-wrap">
+      <div class="word-hint" id="word-hint">? letras</div>
+      <div class="word-letters" id="word-letters"></div>
+    </div>
+
+    <div class="keyboard" id="keyboard"></div>
+
+    <button class="btn btn-danger" style="margin-top:0.5rem" onclick="voltarMenu()">← Desistir</button>
+  </div>
+
+  <!-- RESULTADO -->
+  <div id="screen-result" class="screen">
+    <div class="result-card">
+      <div class="result-icon" id="result-icon"></div>
+      <div class="result-title" id="result-title"></div>
+      <div class="result-word" id="result-word"></div>
+      <div class="score-num" id="result-score"></div>
+      <div class="score-lbl">pontos</div>
+    </div>
+    <div style="display:flex;gap:10px;">
+      <button class="btn btn-blue" style="flex:1" onclick="jogarNovamente()">▶ Jogar novamente</button>
+      <button class="btn btn-ghost" style="flex:1" onclick="voltarMenu()">Menu</button>
+    </div>
+  </div>
+
+  <!-- SCORE -->
+  <div id="screen-score" class="screen">
+    <div class="section-head">Placar</div>
+    <div class="menu-card" style="padding:1rem 1.5rem">
+      <ul class="score-list" id="score-list"></ul>
+    </div>
+    <button class="btn btn-ghost" onclick="voltarMenu()">← Voltar</button>
+  </div>
+
+  <footer>
+    <a href="https://github.com/Zaratini26/Jogo-da-Forca" target="_blank">Ver código no GitHub ↗</a>
+  </footer>
+</div>
+
+
+<script src="script.js"></script>
+</body>
+</html>
